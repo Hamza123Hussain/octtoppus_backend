@@ -6,7 +6,7 @@ import { SignOutController } from '../Controllers/Auth/Signout.js'
 import ResetPass from '../Controllers/Auth/ResetPass.js'
 import { upload } from '../../multerconfig.js'
 const AuthRouter = express.Router()
-AuthRouter.post('/SignIn', upload.single('image'), SignUpController)
+AuthRouter.post('/register', upload.single('image'), SignUpController)
 AuthRouter.post('/Login', LoginController)
 AuthRouter.get('/SignOut', SignOutController)
 AuthRouter.post('/Reset', ResetPass)
