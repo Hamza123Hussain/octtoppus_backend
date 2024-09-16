@@ -1,5 +1,6 @@
 import { signOut } from 'firebase/auth'
-import { Auth } from '../../../Firebase.js'
+import { Auth } from '../../../FireBaseConfig.js'
+
 export const SignOutController = async (req, res) => {
   try {
     // Sign out the user

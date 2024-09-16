@@ -1,7 +1,8 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { Auth, DB, Storage } from '../../../Firebase.js'
+
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import { Auth, DB, Storage } from '../../../FireBaseConfig.js'
 
 export const SignUpController = async (req, res) => {
   const { email, password, Name } = req.body

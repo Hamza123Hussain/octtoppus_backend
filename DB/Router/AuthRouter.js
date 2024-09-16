@@ -1,12 +1,13 @@
 import express from 'express'
-import { Signin } from '../Controllers/Auth/Register.js'
-import { upload } from '../Middleware/Multer.js'
-import { Login } from '../Controllers/Auth/Login.js'
-import { Signout } from '../Controllers/Auth/Signout.js'
+
+import { SignUpController } from '../Controllers/Auth/SignUP.js'
+import { LoginController } from '../Controllers/Auth/Login.js'
+import { SignOutController } from '../Controllers/Auth/Signout.js'
 import ResetPass from '../Controllers/Auth/ResetPass.js'
+import { upload } from '../../multerconfig.js'
 const AuthRouter = express.Router()
-AuthRouter.post('/SignIn', upload.single('image'), Signin)
-AuthRouter.post('/Login', Login)
-AuthRouter.get('/SignOut', Signout)
+AuthRouter.post('/SignIn', upload.single('image'), SignUpController)
+AuthRouter.post('/Login', LoginController)
+AuthRouter.get('/SignOut', SignOutController)
 AuthRouter.post('/Reset', ResetPass)
 export default AuthRouter
