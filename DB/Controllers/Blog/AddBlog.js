@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 export const AddNewBlog = async (req, res) => {
   const randomId = uuidv4()
   try {
-    const { text, Name, title, email, UserName, UserImage } = req.body
+    const { text, title, email, UserName, UserImage } = req.body
     const BlogImage = req.file
     let BlogImageURL = ''
     if (BlogImage) {
@@ -19,7 +19,6 @@ export const AddNewBlog = async (req, res) => {
     await setDoc(docRef, {
       Title: title,
       CreatedBy: UserName,
-      UserName: Name,
       PostID: randomId,
       Text: text,
       comments: [],
