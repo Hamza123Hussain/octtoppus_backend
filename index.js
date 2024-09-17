@@ -2,6 +2,7 @@ import express from 'express' // Import Express framework
 import cors from 'cors' // Import CORS middleware
 import { Port1 } from './Config.js' // Import port number from the configuration file
 import AuthRouter from './DB/Router/AuthRouter.js' // Import authentication routes
+import BlogRouter from './DB/Router/BlogRouter.js'
 
 const app = express()
 const corsOptions = {
@@ -13,7 +14,7 @@ app.use(express.json()) // Middleware to parse JSON request bodies
 
 // Use authentication routes
 app.use('/API/AUTH', AuthRouter) // Mount the authentication router on the '/API/AUTH' path
-
+app.use('/API/Blog', BlogRouter)
 // // Connect to the database
 // connectDB() // Establish a connection to the database
 
