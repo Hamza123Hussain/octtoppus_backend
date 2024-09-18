@@ -6,13 +6,23 @@ import { v4 as uuidv4 } from 'uuid'
 export const AddNewBlog = async (req, res) => {
   const randomId = uuidv4()
   try {
-    const { text, title, email, UserName, UserImage } = req.body
-    const BlogImages = req.files // Get the array of files (images)
+    const { text, title, email, UserName, UserImage, conclusion } = req.body
+    const BlogImages = req.files['images'] // Get the array of files (images)
+    const headerImage = req.files['headerImage']?.[0] // Get the header image file
 
-    // Array to store URLs of uploaded images
     let BlogImageURLs = []
+    let HeaderImageURL = ''
 
-    // Loop through each uploaded image, upload to Firebase, and get the download URL
+    // Upload the header image
+    if (headerImage) {
+      const headerImagePath = `BLOGIMAGES/${email}/header_${headerImage.originalname}`
+      const headerImageRef = ref(Storage, headerImagePath)
+      const headerImageBuffer = headerImage.buffer
+      await uploadBytes(headerImageRef, headerImageBuffer)
+      HeaderImageURL = await getDownloadURL(headerImageRef)
+    }
+
+    // Upload other blog images
     if (BlogImages && BlogImages.length > 0) {
       for (const image of BlogImages) {
         const imagePath = `BLOGIMAGES/${email}/${image.originalname}`
@@ -24,17 +34,18 @@ export const AddNewBlog = async (req, res) => {
       }
     }
 
-    // Save blog post data in Firestore, including the array of image URLs
+    // Save blog post data in Firestore
     const docRef = doc(DB, 'Blogs', randomId)
     await setDoc(docRef, {
       Title: title,
       CreatedBy: UserName,
       PostID: randomId,
       Text: text,
-      comments: [],
+      Conclusion: conclusion, // New field for conclusion
       CreatedAt: Date.now(),
       UserImage,
-      BlogImageURLs, // Save array of URLs
+      HeaderImageURL, // Save header image URL
+      BlogImageURLs, // Save array of URLs for other images
     })
 
     res.status(201).json(true)
