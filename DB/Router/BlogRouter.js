@@ -11,6 +11,11 @@ BlogRouter.post(
   upload.fields([
     { name: 'images', maxCount: 5 },
     { name: 'headerImage', maxCount: 1 },
+    // Include fields for section images
+    ...Array.from({ length: 10 }, (_, i) => ({
+      name: `sectionImage_${i}`,
+      maxCount: 1,
+    })),
   ]),
   AddNewBlog
 )
