@@ -6,14 +6,15 @@ import { v4 as uuidv4 } from 'uuid'
 export const AddNewBlog = async (req, res) => {
   const randomId = uuidv4()
   try {
-    const { text, title, email, UserName, UserImage, conclusion } = req.body
-    const BlogImages = req.files['images'] // Get the array of files (images)
-    const headerImage = req.files['headerImage']?.[0] // Get the header image file
+    const { text, title, email, UserName, UserImage, conclusion, sections } =
+      req.body
+    const BlogImages = req.files['images']
+    const headerImage = req.files['headerImage']?.[0]
 
     let BlogImageURLs = []
     let HeaderImageURL = ''
 
-    // Upload the header image
+    // Upload header image
     if (headerImage) {
       const headerImagePath = `BLOGIMAGES/${email}/header_${headerImage.originalname}`
       const headerImageRef = ref(Storage, headerImagePath)
@@ -22,7 +23,7 @@ export const AddNewBlog = async (req, res) => {
       HeaderImageURL = await getDownloadURL(headerImageRef)
     }
 
-    // Upload other blog images
+    // Upload blog images
     if (BlogImages && BlogImages.length > 0) {
       for (const image of BlogImages) {
         const imagePath = `BLOGIMAGES/${email}/${image.originalname}`
@@ -30,9 +31,12 @@ export const AddNewBlog = async (req, res) => {
         const imageBuffer = image.buffer
         await uploadBytes(BlogImageRef, imageBuffer)
         const BlogImageURL = await getDownloadURL(BlogImageRef)
-        BlogImageURLs.push(BlogImageURL) // Add the URL to the array
+        BlogImageURLs.push(BlogImageURL)
       }
     }
+
+    // Parse sections array
+    const parsedSections = JSON.parse(sections)
 
     // Save blog post data in Firestore
     const docRef = doc(DB, 'Blogs', randomId)
@@ -41,11 +45,12 @@ export const AddNewBlog = async (req, res) => {
       CreatedBy: UserName,
       PostID: randomId,
       Text: text,
-      Conclusion: conclusion, // New field for conclusion
+      Conclusion: conclusion,
       CreatedAt: Date.now(),
       UserImage,
-      HeaderImageURL, // Save header image URL
-      BlogImageURLs, // Save array of URLs for other images
+      HeaderImageURL,
+      BlogImageURLs,
+      Sections: parsedSections, // Save sections array
     })
 
     res.status(201).json(true)
