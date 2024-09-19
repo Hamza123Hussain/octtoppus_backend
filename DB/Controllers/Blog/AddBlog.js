@@ -13,6 +13,7 @@ export const AddNewBlog = async (req, res) => {
 
     let BlogImageURLs = []
     let HeaderImageURL = ''
+    let SectionImageURLs = []
 
     // Upload header image
     if (headerImage) {
@@ -35,8 +36,26 @@ export const AddNewBlog = async (req, res) => {
       }
     }
 
-    // Parse sections array
+    // Parse sections array and handle section images
     const parsedSections = JSON.parse(sections)
+    const SectionData = []
+    for (let i = 0; i < parsedSections.length; i++) {
+      const sectionImage = req.files[`sectionImage_${i}`]?.[0]
+      let SectionImageURL = ''
+      if (sectionImage) {
+        const sectionImagePath = `BLOGIMAGES/${email}/section_${i}_${sectionImage.originalname}`
+        const sectionImageRef = ref(Storage, sectionImagePath)
+        const sectionImageBuffer = sectionImage.buffer
+        await uploadBytes(sectionImageRef, sectionImageBuffer)
+        SectionImageURL = await getDownloadURL(sectionImageRef)
+      }
+
+      SectionData.push({
+        title: parsedSections[i].title,
+        text: parsedSections[i].text,
+        image: SectionImageURL,
+      })
+    }
 
     // Save blog post data in Firestore
     const docRef = doc(DB, 'Blogs', randomId)
@@ -48,9 +67,9 @@ export const AddNewBlog = async (req, res) => {
       Conclusion: conclusion,
       CreatedAt: Date.now(),
       UserImage,
-      HeaderImageURL,
-      BlogImageURLs,
-      Sections: parsedSections, // Save sections array
+      HeaderImageURL, // Save header image URL
+      BlogImageURLs, // Save array of URLs for other images
+      Sections: SectionData, // Save array of sections with images
     })
 
     res.status(201).json(true)
