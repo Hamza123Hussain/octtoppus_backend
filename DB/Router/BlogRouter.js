@@ -3,22 +3,26 @@ import { AddNewBlog } from '../Controllers/Blog/AddBlog.js'
 import { upload } from '../../multerconfig.js'
 import { GetAllBlogs } from '../Controllers/Blog/GettingAll.js'
 import { UpdateBlog } from '../Controllers/Blog/UpdateBlog.js'
+
 const BlogRouter = Router()
+
+// Route for updating an existing blog
 BlogRouter.post('/UpdateBlog', UpdateBlog)
+
+// Route to get all blogs
 BlogRouter.get('/GetAll', GetAllBlogs)
+
+// Route to add a new blog post with header and section images
 BlogRouter.post(
   '/AddBlog',
   upload.fields([
-    { name: 'images', maxCount: 5 },
-    { name: 'headerImage', maxCount: 1 },
-    // Include fields for section images
+    { name: 'headerImage', maxCount: 1 }, // Allow 1 header image
     ...Array.from({ length: 10 }, (_, i) => ({
       name: `sectionImage_${i}`,
-      maxCount: 1,
+      maxCount: 1, // Allow 1 section image per section
     })),
   ]),
   AddNewBlog
 )
-// This will allow uploading up to 5 images at once
 
 export default BlogRouter

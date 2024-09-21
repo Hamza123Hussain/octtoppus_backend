@@ -8,48 +8,32 @@ export const AddNewBlog = async (req, res) => {
   try {
     const { text, title, email, UserName, UserImage, conclusion, sections } =
       req.body
-    const BlogImages = req.files['images']
-    const headerImage = req.files['headerImage']?.[0]
-
-    let BlogImageURLs = []
+    const headerImage = req.files['headerImage']?.[0] // Get the uploaded header image file
     let HeaderImageURL = ''
-    let SectionImageURLs = []
+    let SectionData = []
 
     // Upload header image
     if (headerImage) {
       const headerImagePath = `BLOGIMAGES/${email}/header_${headerImage.originalname}`
       const headerImageRef = ref(Storage, headerImagePath)
-      const headerImageBuffer = headerImage.buffer
-      await uploadBytes(headerImageRef, headerImageBuffer)
-      HeaderImageURL = await getDownloadURL(headerImageRef)
+      await uploadBytes(headerImageRef, headerImage.buffer) // Upload the image to Firebase Storage
+      HeaderImageURL = await getDownloadURL(headerImageRef) // Get the URL of the uploaded image
     }
 
-    // Upload blog images
-    if (BlogImages && BlogImages.length > 0) {
-      for (const image of BlogImages) {
-        const imagePath = `BLOGIMAGES/${email}/${image.originalname}`
-        const BlogImageRef = ref(Storage, imagePath)
-        const imageBuffer = image.buffer
-        await uploadBytes(BlogImageRef, imageBuffer)
-        const BlogImageURL = await getDownloadURL(BlogImageRef)
-        BlogImageURLs.push(BlogImageURL)
-      }
-    }
-
-    // Parse sections array and handle section images
+    // Parse sections and handle each section's image
     const parsedSections = JSON.parse(sections)
-    const SectionData = []
     for (let i = 0; i < parsedSections.length; i++) {
-      const sectionImage = req.files[`sectionImage_${i}`]?.[0]
+      const sectionImage = req.files[`sectionImage_${i}`]?.[0] // Get the section image
       let SectionImageURL = ''
+
       if (sectionImage) {
         const sectionImagePath = `BLOGIMAGES/${email}/section_${i}_${sectionImage.originalname}`
         const sectionImageRef = ref(Storage, sectionImagePath)
-        const sectionImageBuffer = sectionImage.buffer
-        await uploadBytes(sectionImageRef, sectionImageBuffer)
-        SectionImageURL = await getDownloadURL(sectionImageRef)
+        await uploadBytes(sectionImageRef, sectionImage.buffer) // Upload section image
+        SectionImageURL = await getDownloadURL(sectionImageRef) // Get URL of section image
       }
 
+      // Add the section data including the image URL (if any)
       SectionData.push({
         title: parsedSections[i].title,
         text: parsedSections[i].text,
@@ -68,11 +52,12 @@ export const AddNewBlog = async (req, res) => {
       CreatedAt: Date.now(),
       UserImage,
       HeaderImageURL, // Save header image URL
-      BlogImageURLs, // Save array of URLs for other images
-      Sections: SectionData, // Save array of sections with images
+      Sections: SectionData, // Save the sections with images
     })
 
-    res.status(201).json(true)
+    res
+      .status(201)
+      .json({ success: true, message: 'Blog post created successfully' })
   } catch (error) {
     console.error('Error adding post:', error)
     res.status(500).json({
