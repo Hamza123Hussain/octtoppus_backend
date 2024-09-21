@@ -3,6 +3,8 @@ import { AddNewBlog } from '../Controllers/Blog/AddBlog.js'
 import { upload } from '../../multerconfig.js'
 import { GetAllBlogs } from '../Controllers/Blog/GettingAll.js'
 import { UpdateBlog } from '../Controllers/Blog/UpdateBlog.js'
+import { GetSingleBlog } from '../Controllers/Blog/GetSingle.js'
+import { DeleteBlog } from '../Controllers/Blog/DeleteBlog.js'
 
 const BlogRouter = Router()
 
@@ -24,5 +26,8 @@ BlogRouter.post(
   ]),
   AddNewBlog
 )
+
+BlogRouter.get('/GetSingle', GetSingleBlog)
+BlogRouter.delete('/DeleteBlog', DeleteBlog)
 
 export default BlogRouter
