@@ -1,7 +1,7 @@
 import { DB } from '../../../FireBaseConfig.js'
 
 export const DeleteBlog = async (req, res) => {
-  const { id } = req.params
+  const { id } = req.query
 
   try {
     const blogRef = DB.collection('Blogs').doc(id)
