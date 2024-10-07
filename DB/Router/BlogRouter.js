@@ -5,6 +5,7 @@ import { GetAllBlogs } from '../Controllers/Blog/GettingAll.js'
 import { UpdateBlog } from '../Controllers/Blog/UpdateBlog.js'
 import { GetSingleBlog } from '../Controllers/Blog/GetSingle.js'
 import { DeleteBlog } from '../Controllers/Blog/DeleteBlog.js'
+import { uploadVideo } from '../Controllers/Blog/UploadVideo.js'
 
 const BlogRouter = Router()
 
@@ -29,5 +30,6 @@ BlogRouter.post(
 
 BlogRouter.get('/GetSingle', GetSingleBlog)
 BlogRouter.delete('/DeleteBlog', DeleteBlog)
+BlogRouter.post('/UploadImage', upload.single('video'), uploadVideo)
 
 export default BlogRouter
