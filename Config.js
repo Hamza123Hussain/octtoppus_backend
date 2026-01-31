@@ -1,5 +1,5 @@
 import 'dotenv/config'
-
+const Mongo = process.env.Mongo
 const Port1 = process.env.Port
 const apiKey = process.env.REACT_APP_FIREBASE_API_KEY
 const authDomain = process.env.REACT_APP_FIREBASE_AUTH_DOMAIN
@@ -18,4 +18,5 @@ export {
   messagingSenderId,
   Gemni_Api,
   projectId,
+  Mongo,
 }
