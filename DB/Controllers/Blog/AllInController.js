@@ -170,8 +170,6 @@ export const getallBlogs = async (req, res) => {
       )
       .sort({ date: -1 })
 
-      .toArray()
-
     res.status(200).json(blogs)
   } catch (err) {
     console.error(err)
