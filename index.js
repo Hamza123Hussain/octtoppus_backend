@@ -11,7 +11,7 @@ const app = express()
 DB_CONNECTED()
 const corsOptions = {
   origin: '*', // Allow all origins; adjust in production for security
-  methods: ['GET', 'POST'], // Allow only GET and POST
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow only GET and POST
 }
 app.use(cors(corsOptions))
 app.use(express.json()) // Parse JSON request bodies
