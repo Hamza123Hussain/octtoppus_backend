@@ -148,3 +148,33 @@ export const deleteBlog = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server Error' })
   }
 }
+
+export const getallBlogs = async (req, res) => {
+  try {
+    const blogs = await blogsCollection
+      .find(
+        {},
+        {
+          projection: {
+            title: 1,
+            image: 1,
+            titleLink: 1,
+            description: 1,
+            date: 1,
+            content: 1,
+            author: 1,
+            isDraft: 1,
+            isArchived: 1,
+          },
+        },
+      )
+      .sort({ date: -1 })
+
+      .toArray()
+
+    res.status(200).json(blogs)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ success: false, message: 'Server error' })
+  }
+}
