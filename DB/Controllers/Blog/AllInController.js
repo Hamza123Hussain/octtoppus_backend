@@ -83,13 +83,18 @@ export const createBlog = async (req, res) => {
   }
 }
 
-// UPDATE a blog by ID
+// controllers/blogController.js
 export const updateBlog = async (req, res) => {
   try {
-    const blogId = req.query
-    const updates = req.body
+    const { titleLink } = req.query
+    if (!titleLink)
+      return res
+        .status(400)
+        .json({ success: false, message: 'titleLink is required' })
 
+    const updates = req.body
     const updatedBlog = {}
+
     if (updates.titleLink) updatedBlog.titleLink = updates.titleLink
     if (updates.title) updatedBlog.title = updates.title
     if (updates.description) updatedBlog.description = updates.description
@@ -109,17 +114,19 @@ export const updateBlog = async (req, res) => {
     if (updates.date) updatedBlog.date = new Date(updates.date)
 
     const result = await blogsCollection.updateOne(
-      { _id: new ObjectId(blogId) },
+      { titleLink: titleLink }, // ✅ match correctly
       { $set: updatedBlog },
     )
 
     if (result.matchedCount === 0)
       return res.status(404).json({ success: false, message: 'Blog not found' })
 
-    res.status(200).json({ success: true, message: 'Blog updated' })
+    res
+      .status(200)
+      .json({ success: true, message: 'Blog updated successfully' })
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ success: false, message: 'Server Error' })
+    console.error('Update blog error:', err)
+    res.status(500).json({ success: false, message: 'Server error' })
   }
 }
 
