@@ -1,11 +1,10 @@
 import { MongoClient } from 'mongodb'
-
-const client = new MongoClient(
-  'mongodb+srv://octtoppus1:octtoppus1@octtoppuswebsite.pvcilq3.mongodb.net/'
-) // Your MongoDB URI
+import dotenv from 'dotenv'
+dotenv.config()
+const client = new MongoClient(process.env.Mongo) // Your MongoDB URI
 await client.connect()
 
-const db = client.db('blogDB') // replace with your DB name
+const db = client.db('test') // replace with your DB name
 const blogsCollection = db.collection('blogs')
 
 export { blogsCollection }
