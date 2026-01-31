@@ -133,10 +133,10 @@ export const updateBlog = async (req, res) => {
 // DELETE a blog by ID
 export const deleteBlog = async (req, res) => {
   try {
-    const blogId = req.query
+    const { titleLink } = req.query
 
     const result = await blogsCollection.deleteOne({
-      _id: new ObjectId(blogId),
+      titleLink,
     })
 
     if (result.deletedCount === 0)
