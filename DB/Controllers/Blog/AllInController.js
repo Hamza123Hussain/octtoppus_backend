@@ -152,7 +152,19 @@ export const deleteBlog = async (req, res) => {
 export const getallBlogs = async (req, res) => {
   try {
     const blogs = await blogsCollection
-      .find({})
+      .find(
+        {}, // all documents
+        {
+          projection: {
+            title: 1,
+            image: 1,
+            titleLink: 1,
+            description: 1,
+            date: 1,
+            _id: 0, // optional, remove _id
+          },
+        },
+      )
       .sort({ date: -1 }) // newest first
       .toArray()
 
