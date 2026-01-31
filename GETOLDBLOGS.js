@@ -1,32 +1,75 @@
 import { MongoClient } from 'mongodb'
 import fs from 'fs'
-const blogs = JSON.parse(fs.readFileSync('./blog_posts.json', 'utf-8'))
+import csv from 'csv-parser'
 
-async function run() {
-  const client = new MongoClient(
-    'mongodb+srv://octtoppus1:octtoppus1@octtoppuswebsite.pvcilq3.mongodb.net/'
-  )
-  await client.connect()
-  const db = client.db('blogDB')
-  const collection = db.collection('blogs')
+// 🔐 MongoDB connection string
+const uri =
+  'mongodb+srv://octtoppus1:octtoppus1@octtoppusformbackend.uww4t69.mongodb.net/?appName=octtoppusformbackend'
 
-  for (const blog of blogs) {
-    await collection.insertOne({
-      _id: blog.id || undefined,
-      titleLink: blog.title_link,
-      title: blog.title,
-      description: blog.blog_description,
-      author: blog.blog_author,
-      content: blog.content,
-      image: blog.image_link,
-      isDraft: blog.draft_status === '1' || blog.draft_status === 'true',
-      isArchived: blog.archive_status === '1' || blog.archive_status === 'true',
-      date: new Date(blog.date),
-    })
-    console.log('Imported:', blog.title)
+// 🔹 Create Mongo client
+const client = new MongoClient(uri)
+
+async function importBlogs() {
+  try {
+    // 🔹 Connect to MongoDB
+    await client.connect()
+    console.log('✅ MongoDB connected')
+
+    // 🔹 Use `test` database
+    const db = client.db('test')
+    const blogsCollection = db.collection('blogs')
+
+    const blogs = []
+
+    // 🔹 Read CSV file
+    fs.createReadStream('./blog_posts.csv')
+      .pipe(csv())
+      .on('data', (row) => {
+        blogs.push({
+          _id: row.id || undefined, // keep CSV id
+          titleLink: row.title_link,
+          title: row.title,
+          description: row.blog_description,
+          author: row.blog_author,
+          content: row.content,
+          image: row.image_link,
+          isDraft: row.draft_status === '1' || row.draft_status === 'true',
+          isArchived:
+            row.archive_status === '1' || row.archive_status === 'true',
+          date: row.date ? new Date(row.date) : null,
+          createdAt: new Date(),
+        })
+      })
+      .on('end', async () => {
+        if (blogs.length === 0) {
+          console.log('⚠️ No blogs found in CSV')
+          process.exit(0)
+        }
+
+        try {
+          // 🔹 Insert all blogs, skip duplicates
+          const result = await blogsCollection.insertMany(blogs, {
+            ordered: false,
+          })
+          console.log(`✅ ${result.insertedCount} blogs inserted`)
+        } catch (err) {
+          if (err.code === 11000) {
+            // Duplicate key error — ignore, other docs inserted
+            console.log('⚠️ Some duplicate IDs skipped, other blogs inserted')
+          } else {
+            throw err
+          }
+        }
+
+        await client.close()
+        process.exit(0)
+      })
+  } catch (error) {
+    console.error('❌ Error importing blogs:', error)
+    await client.close()
+    process.exit(1)
   }
-
-  await client.close()
 }
 
-run()
+// 🔹 Run import
+importBlogs()
