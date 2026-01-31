@@ -2,6 +2,7 @@ import express from 'express'
 import {
   createBlog,
   deleteBlog,
+  getallBlogs,
   getBlogs,
   getSingleBlog,
   updateBlog,
@@ -14,5 +15,7 @@ router.get('/single', getSingleBlog)
 router.post('/', createBlog)
 router.put('/updateblog', updateBlog)
 router.delete('/deleteblog', deleteBlog)
+
+router.get('/getallblogs', getallBlogs)
 
 export default router
