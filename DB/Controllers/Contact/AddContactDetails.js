@@ -19,7 +19,7 @@ export const storeContact = async (req, res) => {
     } = req.body
 
     // Basic validation
-    if (!fullName || !email || !phoneNumber || !captchaValue) {
+    if (!fullName || !email || !phoneNumber) {
       return res.status(400).json({
         success: false,
         message: 'Required fields are missing',
@@ -35,7 +35,6 @@ export const storeContact = async (req, res) => {
       companyType,
       services,
       message,
-  
     })
 
     // Save to MongoDB
