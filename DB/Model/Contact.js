@@ -44,10 +44,7 @@ const contactSchema = new mongoose.Schema(
       default: '',
     },
 
-    captchaValue: {
-      type: String, // Store captcha token if needed
-      required: true,
-    },
+  
   },
   {
     timestamps: true, // Automatically adds createdAt & updatedAt

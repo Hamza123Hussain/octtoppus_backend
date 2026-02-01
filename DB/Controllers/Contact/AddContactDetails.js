@@ -16,7 +16,6 @@ export const storeContact = async (req, res) => {
       companyType,
       services,
       message,
-      captchaValue,
     } = req.body
 
     // Basic validation
@@ -36,7 +35,7 @@ export const storeContact = async (req, res) => {
       companyType,
       services,
       message,
-      captchaValue,
+  
     })
 
     // Save to MongoDB
